@@ -1,0 +1,46 @@
+package com.example.demo.domain.model;
+
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
+
+@Builder
+public class CreateCommentResponse {
+
+    private Long id;
+    private String comment;
+    private String createdAt;
+    private Poster poster;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    public String getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Poster getPoster() {
+        return poster;
+    }
+
+    public void setPoster(Poster poster) {
+        this.poster = poster;
+    }
+}
