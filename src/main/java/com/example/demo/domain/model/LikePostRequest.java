@@ -7,9 +7,6 @@ import lombok.Setter;
 @Builder
 public class LikePostRequest {
 
-    // 1. get list posts => last_id + count
-    // 2. check new items
-
     private Long id;
 
     public LikePostRequest() {}

@@ -11,6 +11,7 @@ import com.example.demo.exception.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.format.DateTimeFormatter;
@@ -39,21 +40,22 @@ public class GetCommentService {
 
         if(this.postService.findById(request.getId()).isEmpty()) throw new NotFoundException("Post is not existed.");
 
-        Pageable pageable = PageRequest.of(index - 1, count);
+        Pageable pageable = PageRequest.of(index - 1, count, Sort.by(Sort.Order.desc("id")));
 
         List<Comment> comments = this.commentService.findByPostId(id, pageable);
 
         return comments.stream()
                 .map(comment -> {
                     return CreateCommentResponse.builder()
-                            .id(comment.getId())
+                            .id(comment.getId().toString())
                             .comment(comment.getContent())
                             .createdAt(comment.getCreatedAt().format(DateTimeFormatter.ISO_DATE_TIME))
                             .poster(
                                     Poster.builder()
-                                            .id(comment.getAccount().getId())
+                                            .id(comment.getAccount().getId().toString())
                                             .name(comment.getAccount().getProfile().getUsername())
                                             .avatar(comment.getAccount().getProfile().getAvatarLink())
+                                            .online("online")
                                             .build()
                             )
                             .build();

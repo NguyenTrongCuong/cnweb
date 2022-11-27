@@ -32,4 +32,8 @@ public class CommentService {
         this.commentRepository.deleteAll(comments);
     }
 
+    public List<Comment> findByPostIdAndIndexAndCount(Long id, Integer index, Integer count) {
+        return this.commentRepository.findByPostIdAndIndexAndCount(id, index, count);
+    }
+
 }

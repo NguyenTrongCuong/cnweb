@@ -40,6 +40,10 @@ public class PostService {
         return this.postRepository.findByAccountIdWithAllRelationshipsLoadedEagerly(id, pageable);
     }
 
+    public List<Post> findByAccountIdWithAllRelationshipsLoadedEagerlyV2(Long id) {
+        return this.postRepository.findByAccountIdWithAllRelationshipsLoadedEagerlyV2(id);
+    }
+
     public List<Post> findByIdAfter(Long id) {
         return this.postRepository.findByIdAfter(id);
     }

@@ -8,6 +8,7 @@ import com.example.demo.domain.model.CreateReportResponse;
 import com.example.demo.domain.service.crud.AccountService;
 import com.example.demo.domain.service.crud.PostService;
 import com.example.demo.domain.service.crud.ReportService;
+import com.example.demo.exception.DuplicateActionException;
 import com.example.demo.exception.MissingParameterException;
 import com.example.demo.exception.NotFoundException;
 import com.google.common.collect.Sets;
@@ -31,12 +32,12 @@ public class CreateReportService {
     private AccountService accountService;
 
     private static final Set<String> ALLOWED_SUBJECTS = Sets.newLinkedHashSet(Arrays.asList(
-            "VIOLENCE"
+            "VIOLENT", "TOXIC", "UNSUITABLE"
     ));
 
     private static final Long DETAILS_MAX_LENGTH = 200L;
 
-    public CreateReportResponse create(Long accountId, CreateReportRequest createReportRequest) throws MissingParameterException, NotFoundException {
+    public CreateReportResponse create(Long accountId, CreateReportRequest createReportRequest) throws MissingParameterException, NotFoundException, DuplicateActionException {
         Long id = createReportRequest.getId();
         String subject = createReportRequest.getSubject();
         String details = createReportRequest.getDetails();
@@ -45,6 +46,9 @@ public class CreateReportService {
         if(id == null ||
            subject == null ||
            details == null) throw new MissingParameterException("Parameter is not enough.");
+
+        if(this.reportService.findByAccountIdAndPostId(accountId, id).isPresent())
+            throw new DuplicateActionException("Action has been done previously by this user.");
 
         Optional<Post> postRs = this.postService.findById(id);
 

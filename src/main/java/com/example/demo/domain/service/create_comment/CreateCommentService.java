@@ -13,11 +13,16 @@ import com.example.demo.exception.AccountNotFoundException;
 import com.example.demo.exception.MissingParameterException;
 import com.example.demo.exception.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class CreateCommentService {
@@ -33,9 +38,16 @@ public class CreateCommentService {
 
     private static final int MAX_COMMENT_SIZE = 200;
 
-    public CreateCommentResponse create(CreateCommentRequest createCommentRequest) throws NotFoundException, AccountNotFoundException, MissingParameterException {
+    public List<CreateCommentResponse> create(CreateCommentRequest createCommentRequest) throws NotFoundException, AccountNotFoundException, MissingParameterException {
+        Integer index = createCommentRequest.getIndex();
+        Integer count = createCommentRequest.getCount();
+
         if(createCommentRequest.getComment() == null ||
-           createCommentRequest.getId() == null) throw new MissingParameterException("Parameter is not enough.");
+           createCommentRequest.getId() == null ||
+           index == null ||
+           count == null) throw new MissingParameterException("Parameter is not enough.");
+
+        if(index <= 0 || count <= 0) throw new IllegalArgumentException("Parameter value is invalid.");
 
         Optional<Post> postRs = this.postService.findById(createCommentRequest.getId());
 
@@ -45,29 +57,52 @@ public class CreateCommentService {
 
         if(accountRs.isEmpty()) throw new AccountNotFoundException("User is not validated.");
 
-        if(createCommentRequest.getComment().length() > MAX_COMMENT_SIZE) throw new IllegalArgumentException("Parameter value is invalid.");
+        if(createCommentRequest.getComment().length() > MAX_COMMENT_SIZE ||
+           createCommentRequest.getComment().length() == 0) throw new IllegalArgumentException("Parameter value is invalid.");
 
-        Comment comment = Comment.builder()
+        Comment newComment = Comment.builder()
                 .createdAt(LocalDateTime.now())
                 .account(accountRs.get())
                 .post(postRs.get())
                 .content(createCommentRequest.getComment())
                 .build();
 
-        comment = this.commentService.saveOrUpdate(comment);
+        this.commentService.saveOrUpdate(newComment);
 
-        return CreateCommentResponse.builder()
-                .id(comment.getId())
-                .comment(comment.getContent())
-                .createdAt(comment.getCreatedAt().format(DateTimeFormatter.ISO_DATE_TIME))
-                .poster(
-                        Poster.builder()
-                                .id(accountRs.get().getId())
-                                .name(accountRs.get().getProfile().getUsername())
-                                .avatar(accountRs.get().getProfile().getAvatarLink())
-                                .build()
-                )
-                .build();
+        Pageable pageable = PageRequest.of(index - 1, count, Sort.by(Sort.Order.desc("id")));
+
+        List<Comment> comments = this.commentService.findByPostId(createCommentRequest.getId(), pageable);
+
+        return comments.stream()
+                .map(comment -> {
+                    return CreateCommentResponse.builder()
+                            .id(comment.getId().toString())
+                            .comment(comment.getContent())
+                            .createdAt(comment.getCreatedAt().format(DateTimeFormatter.ISO_DATE_TIME))
+                            .poster(
+                                    Poster.builder()
+                                            .id(comment.getAccount().getId().toString())
+                                            .name(comment.getAccount().getProfile().getUsername())
+                                            .avatar(comment.getAccount().getProfile().getAvatarLink())
+                                            .online("online")
+                                            .build()
+                            )
+                            .build();
+                })
+                .collect(Collectors.toList());
+
+//        return CreateCommentResponse.builder()
+//                .id(comment.getId().toString())
+//                .comment(comment.getContent())
+//                .createdAt(comment.getCreatedAt().format(DateTimeFormatter.ISO_DATE_TIME))
+//                .poster(
+//                        Poster.builder()
+//                                .id(accountRs.get().getId().toString())
+//                                .name(accountRs.get().getProfile().getUsername())
+//                                .avatar(accountRs.get().getProfile().getAvatarLink())
+//                                .build()
+//                )
+//                .build();
     }
 
 }

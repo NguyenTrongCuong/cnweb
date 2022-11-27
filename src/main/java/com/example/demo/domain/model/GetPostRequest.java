@@ -7,7 +7,8 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CheckNewItemRequest {
+public class GetPostRequest {
 
-    private Long last_id;
+    private Long id;
+
 }

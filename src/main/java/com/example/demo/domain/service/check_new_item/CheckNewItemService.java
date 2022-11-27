@@ -1,17 +1,16 @@
 package com.example.demo.domain.service.check_new_item;
 
-import com.example.demo.domain.entity.Account;
-import com.example.demo.domain.entity.Comment;
-import com.example.demo.domain.entity.Post;
-import com.example.demo.domain.entity.StaticResource;
+import com.example.demo.domain.entity.*;
 import com.example.demo.domain.model.*;
 import com.example.demo.domain.service.crud.AccountService;
 import com.example.demo.domain.service.crud.PostService;
 import com.example.demo.exception.MissingParameterException;
+import org.hibernate.annotations.Check;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -26,31 +25,24 @@ public class CheckNewItemService {
     @Autowired
     private AccountService accountService;
 
-    public List<CheckNewItemResponse> check(Long accountId, CheckNewItemRequest request) throws MissingParameterException {
-        Long id = request.getLast_id();
+    public CheckNewItemResponse check(Long accountId, CheckNewItemRequest request) throws MissingParameterException {
+        Long lastId = request.getLast_id();
 
-        if(id == null) throw new MissingParameterException("Parameter is not enough.");
+        if(lastId == null) throw new MissingParameterException("Parameter is not enough.");
 
-        if(id <= 0) throw new IllegalArgumentException("Parameter value is invalid.");
+        if(lastId <= 0) throw new IllegalArgumentException("Parameter value is invalid.");
 
         Account account = this.accountService.findById(accountId).get();
 
-        List<Post> posts = this.postService.findByIdAfter(id);
+        List<Post> posts = this.postService.findByAccountIdWithAllRelationshipsLoadedEagerlyV2(accountId);
 
-        return posts.stream()
-                .map(post -> CheckNewItemResponse.builder()
-                        .id(post.getId())
-                        .description(post.getDescription())
-                        .status(post.getStatus())
-                        .like(post.getLove())
-                        .images(getImagesAsList(post.getStaticResources()))
-                        .video(getVideo(post.getStaticResources()))
-                        .is_liked(isLiked(post.getSupporters(), account))
-                        .author(accountToPoster(post.getAccount()))
-                        .comments(commentsToCommentInfos(post.getComments()))
-                        .build()
-                )
-                .collect(Collectors.toList());
+        posts = posts.stream().filter(post -> post.getId() > lastId).collect(Collectors.toList());
+
+        posts.sort(Comparator.comparing(Base::getId).reversed());
+
+        return CheckNewItemResponse.builder()
+                .new_items(String.valueOf(posts.size()))
+                .build();
     }
 
     private List<String> getImagesAsList(Set<StaticResource> staticResources) {
@@ -74,7 +66,7 @@ public class CheckNewItemService {
 
     private Poster accountToPoster(Account account) {
         return Poster.builder()
-                .id(account.getId())
+                .id(account.getId().toString())
                 .name(account.getProfile().getUsername())
                 .avatar(account.getProfile().getAvatarLink())
                 .build();
@@ -84,7 +76,7 @@ public class CheckNewItemService {
         return comments.stream()
                 .map(comment -> {
                     return CommentInfo.builder()
-                            .id(comment.getId())
+                            .id(comment.getId().toString())
                             .created_at(comment.getCreatedAt().format(DateTimeFormatter.ISO_DATE_TIME))
                             .content(comment.getContent())
                             .build();

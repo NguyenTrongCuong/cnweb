@@ -22,8 +22,8 @@ public class FilterConfiguration {
 
         registrationBean.setFilter((AuthFilter) this.authFilter);
         registrationBean.addUrlPatterns(
-                "/signout", "/add_post", "/delete_post", "/edit_post", "/report_post", "/like", "/get_list_posts",
-                "/set_comment", "/edit_comment", "/get_comment"
+                "/logout", "/add_post", "/delete_post", "/edit_post", "/report_post", "/like", "/get_list_posts",
+                "/set_comment", "/edit_comment", "/get_comment", "/check_new_item", "/get_list_posts_v2", "/get_post"
         );
         registrationBean.setOrder(1);
 

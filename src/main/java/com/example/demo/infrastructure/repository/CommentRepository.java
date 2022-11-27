@@ -13,4 +13,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     @Query("SELECT c FROM comment c JOIN c.post p WHERE p.id = :id")
     public List<Comment> findByPostId(@Param("id") Long id, Pageable pageable);
 
+    @Query(value = "SELECT * FROM comment c WHERE c.post_id = :id ORDER BY c.id DESC LIMIT :count OFFSET :index", nativeQuery = true)
+    public List<Comment> findByPostIdAndIndexAndCount(Long id, Integer index, Integer count);
+
 }

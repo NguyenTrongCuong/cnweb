@@ -62,7 +62,7 @@ public class SignUpService {
         Profile profile = new Profile();
         profile.setAccount(account);
         profile.setAvatarLink("-1");
-        profile.setUsername("-1");
+        profile.setUsername(account.getPhoneNumber());
         this.profileService.saveOrUpdate(profile);
 
         return SignUpResponse.builder()

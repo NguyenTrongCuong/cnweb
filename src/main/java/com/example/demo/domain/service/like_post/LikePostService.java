@@ -6,6 +6,7 @@ import com.example.demo.domain.model.LikePostRequest;
 import com.example.demo.domain.model.LikePostResponse;
 import com.example.demo.domain.service.crud.AccountService;
 import com.example.demo.domain.service.crud.PostService;
+import com.example.demo.exception.DuplicateActionException;
 import com.example.demo.exception.MissingParameterException;
 import com.example.demo.exception.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,7 @@ public class LikePostService {
     @Autowired
     private AccountService accountService;
 
-    public LikePostResponse like(Long accountId, LikePostRequest likePostRequest) throws MissingParameterException, NotFoundException {
+    public LikePostResponse like(Long accountId, LikePostRequest likePostRequest) throws MissingParameterException, NotFoundException, DuplicateActionException {
         Account account = this.accountService.findByIdWithLikedPostsLoadedEagerly(accountId).get();
 
         Long id = likePostRequest.getId();
@@ -35,6 +36,9 @@ public class LikePostService {
 
         Post post = postRs.get();
 
+        if(post.getSupporters().stream().filter(supporter -> supporter.getId().equals(accountId)).findAny().isPresent())
+            throw new DuplicateActionException("Action has been done previously by this user.");
+
         post.setLove(post.getLove() + 1);
         post.getSupporters().add(account);
 
@@ -45,7 +49,7 @@ public class LikePostService {
         this.accountService.saveOrUpdate(account);
 
         return LikePostResponse.builder()
-                .like(post.getLove())
+                .like(post.getLove().toString())
                 .build();
     }
 

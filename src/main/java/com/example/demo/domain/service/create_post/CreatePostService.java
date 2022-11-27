@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
@@ -52,9 +53,10 @@ public class CreatePostService {
         boolean containImages = false;
         boolean containVideo = false;
 
-        if(post.getDescription() == null) throw new MissingParameterException("Parameter is not enough.");
+        if(post.getDescribed() == null) throw new MissingParameterException("Parameter is not enough.");
 
-        if(post.getDescription().length() > MAX_DESCRIPTION_SIZE) throw new IllegalArgumentException("Parameter value is invalid.");
+        if(post.getDescribed().length() > MAX_DESCRIPTION_SIZE ||
+           post.getDescribed().length() == 0) throw new IllegalArgumentException("Parameter value is invalid.");
 
         if(post.getStatus() != null &&
            !ALLOWED_STATUSES.contains(post.getStatus())) throw new IllegalArgumentException("Parameter value is invalid.");
@@ -93,6 +95,7 @@ public class CreatePostService {
         }
 
         post.setAccount(account);
+        post.setCreated(LocalDateTime.now());
 
         post = this.postService.saveOrUpdate(post);
 
@@ -125,7 +128,7 @@ public class CreatePostService {
         }
 
         return CreatePostResponse.builder()
-                .id(post.getId())
+                .id(post.getId().toString())
                 .build();
     }
 

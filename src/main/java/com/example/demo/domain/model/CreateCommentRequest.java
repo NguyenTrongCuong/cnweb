@@ -1,15 +1,35 @@
 package com.example.demo.domain.model;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class CreateCommentRequest {
 
     private Long id;
     private Long accountId;
     private String comment;
+
+    private Integer index;
+
+    private Integer count;
+
+    public Integer getIndex() {
+        return index;
+    }
+
+    public void setIndex(Integer index) {
+        this.index = index;
+    }
+
+    public Integer getCount() {
+        return count;
+    }
+
+    public void setCount(Integer count) {
+        this.count = count;
+    }
 
     public Long getId() {
         return id;

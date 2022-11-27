@@ -7,7 +7,10 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CheckNewItemRequest {
+public class ImageResponse {
 
-    private Long last_id;
+    private String id;
+
+    private String url;
+
 }

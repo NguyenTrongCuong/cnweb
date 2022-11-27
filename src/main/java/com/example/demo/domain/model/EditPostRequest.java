@@ -14,7 +14,7 @@ public class EditPostRequest {
 
     private String status;
 
-    private String description;
+    private String described;
 
     private List<MultipartFile> images;
 
@@ -44,12 +44,12 @@ public class EditPostRequest {
         this.status = status;
     }
 
-    public String getDescription() {
-        return description;
+    public String getDescribed() {
+        return described;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setDescribed(String described) {
+        this.described = described;
     }
 
     public List<MultipartFile> getImages() {

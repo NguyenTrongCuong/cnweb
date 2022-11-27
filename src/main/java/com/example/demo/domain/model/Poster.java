@@ -7,15 +7,25 @@ import lombok.Setter;
 @Builder
 public class Poster {
 
-    private Long id;
+    private String id;
     private String name;
     private String avatar;
 
-    public Long getId() {
+    private String online;
+
+    public String getOnline() {
+        return online;
+    }
+
+    public void setOnline(String online) {
+        this.online = online;
+    }
+
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 

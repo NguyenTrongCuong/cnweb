@@ -5,17 +5,17 @@ import lombok.Builder;
 @Builder
 public class ResponseBody {
 
-    private Integer code;
+    private String code;
 
     private String message;
 
     private Object data;
 
-    public Integer getCode() {
+    public String getCode() {
         return code;
     }
 
-    public void setCode(Integer code) {
+    public void setCode(String code) {
         this.code = code;
     }
 

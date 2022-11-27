@@ -7,17 +7,17 @@ import lombok.Setter;
 @Builder
 public class CommentInfo {
 
-    private Long id;
+    private String id;
 
     private String content;
 
     private String created_at;
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 

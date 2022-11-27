@@ -9,61 +9,157 @@ import java.util.List;
 @Builder
 public class GetListPostsResponse {
 
-    private Long id;
+    private String id;
 
-    private String description;
+    private String described;
 
-    private String status;
+    private String state;
 
-    private Long like;
+    private String like;
 
-    private List<String> images;
+    private List<ImageResponse> images;
 
     private String video;
 
-    private boolean is_liked;
+    private String is_liked;
 
     private Poster author;
 
-    private List<CommentInfo> comments;
+    private String comments;
 
-    public Long getId() {
-        return id;
+    private String created;
+
+    private String modified;
+
+    private String is_blocked;
+
+    private String can_edit;
+
+    private String banned;
+
+    private String can_comment;
+
+    private String url;
+
+    private List<String> messages;
+
+    public String getIs_blocked() {
+        return is_blocked;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setIs_blocked(String is_blocked) {
+        this.is_blocked = is_blocked;
     }
 
-    public String getDescription() {
-        return description;
+    public String getCan_edit() {
+        return can_edit;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setCan_edit(String can_edit) {
+        this.can_edit = can_edit;
     }
 
-    public String getStatus() {
-        return status;
+    public String getBanned() {
+        return banned;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setBanned(String banned) {
+        this.banned = banned;
     }
 
-    public Long getLike() {
+    public String getCan_comment() {
+        return can_comment;
+    }
+
+    public void setCan_comment(String can_comment) {
+        this.can_comment = can_comment;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public List<String> getMessages() {
+        return messages;
+    }
+
+    public void setMessages(List<String> messages) {
+        this.messages = messages;
+    }
+
+    public String getCreated() {
+        return created;
+    }
+
+    public void setCreated(String created) {
+        this.created = created;
+    }
+
+    public String getModified() {
+        return modified;
+    }
+
+    public void setModified(String modified) {
+        this.modified = modified;
+    }
+
+    public String getDescribed() {
+        return described;
+    }
+
+    public void setDescribed(String described) {
+        this.described = described;
+    }
+
+    public String getLike() {
         return like;
     }
 
-    public void setLike(Long like) {
+    public String getIs_liked() {
+        return is_liked;
+    }
+
+    public void setIs_liked(String is_liked) {
+        this.is_liked = is_liked;
+    }
+
+    public String getComments() {
+        return comments;
+    }
+
+    public void setComments(String comments) {
+        this.comments = comments;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setLike(String like) {
         this.like = like;
     }
 
-    public List<String> getImages() {
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public List<ImageResponse> getImages() {
         return images;
     }
 
-    public void setImages(List<String> images) {
+    public void setImages(List<ImageResponse> images) {
         this.images = images;
     }
 
@@ -75,27 +171,11 @@ public class GetListPostsResponse {
         this.video = video;
     }
 
-    public boolean isIs_liked() {
-        return is_liked;
-    }
-
-    public void setIs_liked(boolean is_liked) {
-        this.is_liked = is_liked;
-    }
-
     public Poster getAuthor() {
         return author;
     }
 
     public void setAuthor(Poster author) {
         this.author = author;
-    }
-
-    public List<CommentInfo> getComments() {
-        return comments;
-    }
-
-    public void setComments(List<CommentInfo> comments) {
-        this.comments = comments;
     }
 }

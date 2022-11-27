@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.Optional;
 
 @Service("reportService")
 public class ReportService {
@@ -25,4 +26,7 @@ public class ReportService {
         this.reportRepository.deleteAll(reports);
     }
 
+    public Optional<Report> findByAccountIdAndPostId(Long accountId, Long postId) {
+        return this.reportRepository.findByAccountIdAndPostId(accountId, postId);
+    }
 }

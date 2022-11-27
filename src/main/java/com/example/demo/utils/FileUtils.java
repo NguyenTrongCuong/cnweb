@@ -42,7 +42,7 @@ public class FileUtils {
 
         if(!storage.exists()) storage.mkdirs();
 
-        File uploadedFile = new File("src/main/resources/static/storage/" + file.getOriginalFilename());
+        File uploadedFile = new File("src/main/resources/static/storage/" + file.getOriginalFilename().replaceAll(" +", "-"));
 
         FileOutputStream fos = new FileOutputStream(uploadedFile);
 
@@ -54,7 +54,7 @@ public class FileUtils {
 
         fos.close();
 
-        return "http://localhost:8080/static/storage/" + file.getOriginalFilename();
+        return "http://localhost:8080/static/storage/" + file.getOriginalFilename().replaceAll(" +", "-");
     }
 
 }

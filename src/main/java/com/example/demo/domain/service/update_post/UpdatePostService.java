@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -37,7 +38,9 @@ public class UpdatePostService {
     private static final Set<String> ALLOWED_STATUSES = Sets.newLinkedHashSet(Arrays.asList("NORMAL", "ABNORMAL"));
 
     public CreatePostResponse update(Long accountId, EditPostRequest editPostRequest) throws IOException, NotFoundException, AccessDeniedException, MissingParameterException {
-        if(editPostRequest.getId() == null) throw new MissingParameterException("Parameter is not enough.");
+        if(editPostRequest.getId() == null ||
+           editPostRequest.getAuto_block() == null ||
+           editPostRequest.getAuto_accept() == null) throw new MissingParameterException("Parameter is not enough.");
 
         Optional<Post> rs = this.postService.findByIdWithAllRelationshipsLoadedEagerly(editPostRequest.getId());
 
@@ -52,25 +55,34 @@ public class UpdatePostService {
 
         post.setStatus(editPostRequest.getStatus());
 
-        if(editPostRequest.getDescription() != null &&
-           editPostRequest.getDescription().length() > MAX_DESCRIPTION_SIZE) throw new IllegalArgumentException("Parameter value is invalid.");
+        if(editPostRequest.getDescribed() != null &&
+           (editPostRequest.getDescribed().length() > MAX_DESCRIPTION_SIZE ||
+            editPostRequest.getDescribed().length() == 0)) throw new IllegalArgumentException("Parameter value is invalid.");
 
-        post.setDescription(editPostRequest.getDescription());
+        post.setDescribed(editPostRequest.getDescribed());
 
-        if(!editPostRequest.getAuto_accept().equals("0") &&
+        if(editPostRequest.getAuto_accept() != null &&
+           !editPostRequest.getAuto_accept().equals("0") &&
            !editPostRequest.getAuto_accept().equals("1")) throw new IllegalArgumentException("Parameter value is invalid.");
 
-        if(!editPostRequest.getAuto_block().equals("0") &&
+        if(editPostRequest.getAuto_block() != null &&
+           !editPostRequest.getAuto_block().equals("0") &&
            !editPostRequest.getAuto_block().equals("1")) throw new IllegalArgumentException("Parameter value is invalid.");
 
         if(editPostRequest.getImages() != null &&
            editPostRequest.getVideo() != null) throw new IllegalArgumentException("Parameter value is invalid.");
 
         if(editPostRequest.getImages() == null &&
-           editPostRequest.getVideo() == null) {
+           editPostRequest.getImage_sort() != null) throw new IllegalArgumentException("Parameter value is invalid.");
+
+        post.setModified(LocalDateTime.now());
+
+        if(editPostRequest.getImages() == null &&
+           editPostRequest.getVideo() == null &&
+            editPostRequest.getImage_del() == null) {
             this.postService.saveOrUpdate(post);
             return CreatePostResponse.builder()
-                    .id(post.getId())
+                    .id(post.getId().toString())
                     .build();
         }
 
@@ -124,7 +136,7 @@ public class UpdatePostService {
             this.staticResourceService.deleteAll(deletedImages);
             this.postService.saveOrUpdate(post);
             return CreatePostResponse.builder()
-                    .id(post.getId())
+                    .id(post.getId().toString())
                     .build();
         }
 
@@ -141,12 +153,31 @@ public class UpdatePostService {
             this.staticResourceService.deleteAll(videoResources);
             this.postService.saveOrUpdate(post);
             return CreatePostResponse.builder()
-                    .id(post.getId())
+                    .id(post.getId().toString())
+                    .build();
+        }
+
+        if(editPostRequest.getImage_del() != null) {
+            List<Long> deletedImageIds = editPostRequest.getImage_del();
+
+            List<StaticResource> deletedImages = imageResources.stream()
+                    .filter(imageResource -> deletedImageIds.contains(imageResource.getId()))
+                    .collect(Collectors.toList());
+
+            if(deletedImages.size() != deletedImageIds.size()) throw new IllegalArgumentException("Parameter value is invalid.");
+
+            removeAndRearrange(imageResources, deletedImages);
+
+            this.staticResourceService.saveOrUpdateAll(imageResources);
+            this.staticResourceService.deleteAll(deletedImages);
+            this.postService.saveOrUpdate(post);
+            return CreatePostResponse.builder()
+                    .id(post.getId().toString())
                     .build();
         }
 
         return CreatePostResponse.builder()
-                .id(post.getId())
+                .id(post.getId().toString())
                 .build();
     }
 

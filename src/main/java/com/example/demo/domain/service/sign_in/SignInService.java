@@ -52,7 +52,7 @@ public class SignInService {
         this.sessionService.saveOrUpdate(session);
 
         return SignInResponse.builder()
-                .id(actual.getId())
+                .id(actual.getId().toString())
                 .username(actual.getProfile().getUsername())
                 .avatar(actual.getProfile().getAvatarLink())
                 .token(token)

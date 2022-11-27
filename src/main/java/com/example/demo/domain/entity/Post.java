@@ -1,10 +1,9 @@
 package com.example.demo.domain.entity;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -17,11 +16,17 @@ public class Post extends Base {
     @Transient
     private List<MultipartFile> video;
 
-    @Column(name = "description")
-    private String description;
+    @Column(name = "described")
+    private String described;
 
     @Column(name = "status")
     private String status;
+
+    @Column(name = "created")
+    private LocalDateTime created;
+
+    @Column(name = "modified")
+    private LocalDateTime modified;
 
     @Column(name = "love")
     private Long love = 0L;
@@ -45,6 +50,30 @@ public class Post extends Base {
                inverseJoinColumns = @JoinColumn(name = "account_id"))
     private Set<Account> supporters;
 
+    public String getDescribed() {
+        return described;
+    }
+
+    public void setDescribed(String described) {
+        this.described = described;
+    }
+
+    public LocalDateTime getCreated() {
+        return created;
+    }
+
+    public void setCreated(LocalDateTime created) {
+        this.created = created;
+    }
+
+    public LocalDateTime getModified() {
+        return modified;
+    }
+
+    public void setModified(LocalDateTime modified) {
+        this.modified = modified;
+    }
+
     public List<MultipartFile> getImages() {
         return images;
     }
@@ -59,14 +88,6 @@ public class Post extends Base {
 
     public void setVideo(List<MultipartFile> video) {
         this.video = video;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public String getStatus() {

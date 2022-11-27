@@ -28,19 +28,31 @@ public class AuthFilter implements Filter {
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
         HttpServletResponse httpServletResponse = (HttpServletResponse) servletResponse;
 
-        String authorizationHeader = httpServletRequest.getHeader("Authorization");
-
         try {
-            if(authorizationHeader == null || authorizationHeader.length() < "Bearer ".length()) {
-                throw new IllegalArgumentException("Token is invalid.");
-            }
+            String token = httpServletRequest.getParameter("token");
 
-            String accessToken = authorizationHeader.substring("Bearer ".length());
-            TokenUtils.verifyToken(accessToken);
+            if(token == null) throw new IllegalArgumentException("Token is invalid.");
 
-            if(!this.sessionService.existsBySessionId(accessToken)) throw new IllegalArgumentException("Token is invalid.");
+            TokenUtils.verifyToken(token);
+
+            if(!this.sessionService.existsBySessionId(token)) throw new IllegalArgumentException("Token is invalid.");
+
+            httpServletRequest.setAttribute("token", token);
 
             filterChain.doFilter(servletRequest, servletResponse);
+
+//            String authorizationHeader = httpServletRequest.getHeader("Authorization");
+
+//            if(authorizationHeader == null || authorizationHeader.length() < "Bearer ".length()) {
+//                throw new IllegalArgumentException("Token is invalid.");
+//            }
+//
+//            String accessToken = authorizationHeader.substring("Bearer ".length());
+//            TokenUtils.verifyToken(accessToken);
+//
+//            if(!this.sessionService.existsBySessionId(accessToken)) throw new IllegalArgumentException("Token is invalid.");
+//
+//            filterChain.doFilter(servletRequest, servletResponse);
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -50,7 +62,7 @@ public class AuthFilter implements Filter {
                     httpServletResponse,
                     this.objectMapper.writeValueAsString(
                             ResponseBody.builder()
-                                    .code(9998)
+                                    .code("9998")
                                     .message("Token is invalid.")
                                     .build()
                     )

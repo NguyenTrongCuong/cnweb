@@ -7,13 +7,13 @@ import lombok.Setter;
 @Builder
 public class LikePostResponse {
 
-    private Long like;
+    private String like;
 
-    public Long getLike() {
+    public String getLike() {
         return like;
     }
 
-    public void setLike(Long like) {
+    public void setLike(String like) {
         this.like = like;
     }
 }
